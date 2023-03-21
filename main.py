@@ -7,6 +7,7 @@
 #   BL :                             Pico GP9(12)
 #   Gnd:                             Pico GND (38)
 
+import random
 from lib import pcd8544_fb
 from machine import Pin, SPI, Timer
 import time
@@ -29,26 +30,37 @@ led = Pin(13, Pin.OUT)
 
 
 snake = snake.Snake()
+headings = ["UP", "DOWN", "RIGHT", "LEFT"]
 
 
 def draw_board():
-    lcd.clear()
     lcd.hline(0, 0, 84, 1)
     lcd.hline(0, 47, 84, 1)
     lcd.vline(0, 0, 48, 1)
     lcd.vline(83, 0, 48, 1)
-    lcd.show()
 
 
-def main(value):
-    print("hi")
+def draw_snake():
+    for segment in snake.segments:
+        lcd.fill_rect(segment.x, segment.y, segment.size, segment.size, 1)
 
 
-start = time.ticks_ms()
+def check_win():
+    pass
+
+
+previous_time = time.ticks_ms()
 while True:
-    time_passed = time.ticks_diff(time.ticks_ms(), start)
-    if time_passed >= 7650:
+    time_passed = time.ticks_diff(time.ticks_ms(), previous_time)
+    if time_passed >= 1000:
+        lcd.fill(0)
+        lcd.show()
+        snake.move_snake()
+        draw_snake()
         draw_board()
-        print(time_passed)
-        start = time.ticks_ms()
+        check_win()
+        lcd.show()
+        previous_time = time.ticks_ms()
 
+    if not button.value():
+        snake.heading = random.choice(headings)
