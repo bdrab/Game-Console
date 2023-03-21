@@ -25,19 +25,25 @@ back_light = Pin(9, Pin.OUT, value=0)
 lcd = pcd8544_fb.PCD8544_FB(spi, cs, dc, rst)
 lcd.contrast(0x3f, pcd8544_fb.BIAS_1_48, pcd8544_fb.TEMP_COEFF_0)
 
-button = Pin(15, Pin.IN, Pin.PULL_UP)
+button_up = Pin(17, Pin.IN, Pin.PULL_UP)
+button_down = Pin(16, Pin.IN, Pin.PULL_UP)
+button_left = Pin(18, Pin.IN, Pin.PULL_UP)
+button_right = Pin(19, Pin.IN, Pin.PULL_UP)
 led = Pin(13, Pin.OUT)
 
 
 snake = snake.Snake()
-headings = ["UP", "DOWN", "RIGHT", "LEFT"]
 
 
 def draw_board():
     lcd.hline(0, 0, 84, 1)
+    lcd.hline(0, 1, 84, 1)
+    lcd.hline(0, 46, 84, 1)
     lcd.hline(0, 47, 84, 1)
     lcd.vline(0, 0, 48, 1)
+    lcd.vline(1, 0, 48, 1)
     lcd.vline(83, 0, 48, 1)
+    lcd.vline(82, 0, 48, 1)
 
 
 def draw_snake():
@@ -52,7 +58,7 @@ def check_win():
 previous_time = time.ticks_ms()
 while True:
     time_passed = time.ticks_diff(time.ticks_ms(), previous_time)
-    if time_passed >= 1000:
+    if time_passed >= 500:
         lcd.fill(0)
         lcd.show()
         snake.move_snake()
@@ -62,5 +68,11 @@ while True:
         lcd.show()
         previous_time = time.ticks_ms()
 
-    if not button.value():
-        snake.heading = random.choice(headings)
+    if not button_up.value():
+        snake.heading = "UP"
+    elif not button_down.value():
+        snake.heading = "DOWN"
+    elif not button_left.value():
+        snake.heading = "LEFT"
+    elif not button_right.value():
+        snake.heading = "RIGHT"
