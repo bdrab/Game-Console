@@ -8,7 +8,7 @@
 #   Gnd:                             Pico GND (38)
 
 from lib import pcd8544_fb
-from machine import Pin, SPI
+from machine import Pin, SPI, Timer
 import time
 from snake_files import snake
 
@@ -40,7 +40,15 @@ def draw_board():
     lcd.show()
 
 
-while True:
-    draw_board()
-    time.sleep(5)
+def main(value):
     print("hi")
+
+
+start = time.ticks_ms()
+while True:
+    time_passed = time.ticks_diff(time.ticks_ms(), start)
+    if time_passed >= 7650:
+        draw_board()
+        print(time_passed)
+        start = time.ticks_ms()
+
