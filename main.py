@@ -51,28 +51,62 @@ def draw_snake():
         lcd.fill_rect(segment.x, segment.y, segment.size, segment.size, 1)
 
 
+def draw_food():
+    lcd.fill_rect(snake.food.x, snake.food.y, snake.food.size, snake.food.size, 1)
+
+
 def check_win():
-    pass
+    end_game = False
+
+    if snake.head.x < 2 or snake.head.x > 78 or snake.head.y < 2 or snake.head.y > 42:
+        end_game = True
+
+    for snake_segment in snake.segments[1:]:
+        if snake_segment.x == snake.head.x and snake_segment.y == snake.head.y:
+            end_game = True
+
+    return end_game
 
 
+def food_has_been_eaten():
+    if snake.head.x == snake.food.x and snake.head.y == snake.food.y:
+        generate_snake_food()
+        return True
+
+
+def generate_snake_food():
+    random_x = random.randrange(2, 82, 4)
+    random_y = random.randrange(2, 42, 4)
+
+    snake.food.x = random_x
+    snake.food.y = random_y
+
+
+game_is_end = False
 previous_time = time.ticks_ms()
-while True:
+while not game_is_end:
     time_passed = time.ticks_diff(time.ticks_ms(), previous_time)
     if time_passed >= 500:
         lcd.fill(0)
         lcd.show()
-        snake.move_snake()
-        draw_snake()
+
+        x, y = snake.move_snake()
+        if food_has_been_eaten():
+            snake.add_segment(x, y)
+
         draw_board()
-        check_win()
+        draw_snake()
+        draw_food()
+
+        game_is_end = check_win()
         lcd.show()
         previous_time = time.ticks_ms()
 
     if not button_up.value():
-        snake.heading = "UP"
+        snake.move_up()
     elif not button_down.value():
-        snake.heading = "DOWN"
+        snake.move_down()
     elif not button_left.value():
-        snake.heading = "LEFT"
+        snake.move_left()
     elif not button_right.value():
-        snake.heading = "RIGHT"
+        snake.move_right()
