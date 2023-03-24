@@ -35,7 +35,7 @@ led = Pin(13, Pin.OUT)
 snake = snake.Snake()
 
 
-def draw_board():
+def draw_frame():
     lcd.hline(0, 0, 84, 1)
     lcd.hline(0, 1, 84, 1)
     lcd.hline(0, 46, 84, 1)
@@ -82,31 +82,82 @@ def generate_snake_food():
     snake.food.y = random_y
 
 
-game_is_end = False
+def snake_game():
+    # TODO: snake games needs to be restarted to allow user playing again
+    game_is_end = False
+
+    previous_time_game = time.ticks_ms()
+    while not game_is_end:
+        time_passed_game = time.ticks_diff(time.ticks_ms(), previous_time_game)
+        if time_passed_game >= 500:
+            lcd.fill(0)
+            lcd.show()
+
+            x, y = snake.move_snake()
+            if food_has_been_eaten():
+                snake.add_segment(x, y)
+
+            draw_frame()
+            draw_snake()
+            draw_food()
+
+            game_is_end = check_win()
+            lcd.show()
+            previous_time_game = time.ticks_ms()
+
+        if not button_up.value():
+            snake.move_up()
+        elif not button_down.value():
+            snake.move_down()
+        elif not button_left.value():
+            snake.move_left()
+        elif not button_right.value():
+            snake.move_right()
+
+
+def test_menu():
+    lcd.fill(1)
+    lcd.show()
+    time.sleep(5)
+
+
+menu_items = {
+    0: snake_game,
+    1: test_menu
+}
+
+
+def accept_menu(menu_item):
+    menu_items[menu_item]()
+
+
+selected_menu_items = 0
+MENU_ITEMS = 2
 previous_time = time.ticks_ms()
-while not game_is_end:
+
+while True:
+    lcd.fill(0)
+    lcd.text("Snake", 7, 0)
+    lcd.text("Test", 7, 8)
+    lcd.rect(2, 8 * selected_menu_items + 2, 3, 3, 1)
+    lcd.show()
+
     time_passed = time.ticks_diff(time.ticks_ms(), previous_time)
-    if time_passed >= 500:
-        lcd.fill(0)
-        lcd.show()
+    if time_passed >= 200:
 
-        x, y = snake.move_snake()
-        if food_has_been_eaten():
-            snake.add_segment(x, y)
+        if not button_up.value():
+            selected_menu_items += 1
+            previous_time = time.ticks_ms()
 
-        draw_board()
-        draw_snake()
-        draw_food()
+        if not button_down.value():
+            selected_menu_items -= 1
+            previous_time = time.ticks_ms()
 
-        game_is_end = check_win()
-        lcd.show()
-        previous_time = time.ticks_ms()
+        if selected_menu_items == -1:
+            selected_menu_items = 1
+        elif selected_menu_items == 2:
+            selected_menu_items = 0
 
-    if not button_up.value():
-        snake.move_up()
-    elif not button_down.value():
-        snake.move_down()
-    elif not button_left.value():
-        snake.move_left()
-    elif not button_right.value():
-        snake.move_right()
+        if not button_right.value():
+            previous_time = time.ticks_ms()
+            accept_menu(selected_menu_items)
