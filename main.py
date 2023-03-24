@@ -83,9 +83,8 @@ def generate_snake_food():
 
 
 def snake_game():
-    # TODO: snake games needs to be restarted to allow user playing again
     game_is_end = False
-
+    snake.recreate_snake()
     previous_time_game = time.ticks_ms()
     while not game_is_end:
         time_passed_game = time.ticks_diff(time.ticks_ms(), previous_time_game)
@@ -121,24 +120,26 @@ def test_menu():
     time.sleep(5)
 
 
-menu_items = {
-    0: snake_game,
-    1: test_menu
-}
+menu_items = [
+    ["Snake", snake_game],
+    ["Test", test_menu],
+]
 
 
 def accept_menu(menu_item):
-    menu_items[menu_item]()
+    menu_items[menu_item][1]()
 
 
 selected_menu_items = 0
-MENU_ITEMS = 2
+MENU_ITEMS = len(menu_items)
 previous_time = time.ticks_ms()
 
 while True:
     lcd.fill(0)
-    lcd.text("Snake", 7, 0)
-    lcd.text("Test", 7, 8)
+
+    for index, element in enumerate(menu_items):
+        lcd.text(element[0], 7, index*8)
+
     lcd.rect(2, 8 * selected_menu_items + 2, 3, 3, 1)
     lcd.show()
 

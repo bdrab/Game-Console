@@ -15,6 +15,9 @@ class Snake:
         self.add_segment(*START_POSITION)
         self.add_segment(*START_POSITION_2)
 
+    def recreate_snake(self):
+        self.__init__()
+
     def add_segment(self, x, y):
         self.segments.append(segment.Segment((x, y)))
 
