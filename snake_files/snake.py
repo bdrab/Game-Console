@@ -1,4 +1,5 @@
 from snake_files import segment
+import random
 START_POSITION = (30, 30)
 START_POSITION_2 = (26, 30)
 
@@ -58,3 +59,27 @@ class Snake:
     def move_left(self):
         if self.heading != "RIGHT":
             self.heading = "LEFT"
+
+    def check_win(self):
+        end_game = False
+
+        if self.head.x < 2 or self.head.x > 78 or self.head.y < 2 or self.head.y > 42:
+            end_game = True
+
+        for snake_segment in self.segments[1:]:
+            if snake_segment.x == self.head.x and snake_segment.y == self.head.y:
+                end_game = True
+
+        return end_game
+
+    def food_has_been_eaten(self):
+        if self.head.x == self.food.x and self.head.y == self.food.y:
+            self.generate_snake_food()
+            return True
+
+    def generate_snake_food(self):
+        random_x = random.randrange(2, 82, 4)
+        random_y = random.randrange(2, 42, 4)
+
+        self.food.x = random_x
+        self.food.y = random_y
