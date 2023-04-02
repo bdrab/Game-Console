@@ -2,6 +2,7 @@ import time
 from lib import pcd8544_fb
 from machine import Pin, SPI
 from snake_files import snake_game
+from tetris_files import tetris_game
 from keyboard_files import keyboard
 from lib import buzzer_music
 from sound_files import sounds
@@ -20,8 +21,10 @@ back_light = Pin(9, Pin.OUT, value=0)
 keyboard = keyboard.Keyboard()
 lcd = pcd8544_fb.PCD8544_FB(spi, cs, dc, rst)
 lcd.contrast(0x3f, pcd8544_fb.BIAS_1_48, pcd8544_fb.TEMP_COEFF_0)
-snake_sound = buzzer_music.music(sounds.song, pins=[buzzer])
+snake_sound = buzzer_music.music(sounds.song_snake, pins=[buzzer])
+snake_tetris = buzzer_music.music(sounds.song_tetris, pins=[buzzer])
 snake_game = snake_game.SnakeGame(game_keyboard=keyboard, game_song=snake_sound, game_lcd=lcd)
+tetris_game = tetris_game.TetrisGame(game_keyboard=keyboard, game_song=snake_tetris, game_lcd=lcd)
 
 
 def test_menu():
@@ -40,6 +43,7 @@ def turn_off_led():
 
 menu_items = [
     ["Snake", snake_game.run_snake],
+    ["Tetris", tetris_game.run_tetris],
     ["Test", test_menu],
     ["Settings", [
         ["LED", [
