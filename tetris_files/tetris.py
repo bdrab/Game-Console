@@ -225,7 +225,16 @@ class Tetris:
         self.__init__()
 
     def generate_new_element(self):
+        collision_detected_end_game = False
+
         self.tetromino = Tetromino()
+
+        for tetris_segment in self.tetris_segments:
+            for segment in self.tetromino.tetromino_segments:
+                if segment.x == tetris_segment.x and segment.y == tetris_segment.y:
+                    collision_detected_end_game = True
+
+        return collision_detected_end_game
 
     def check_collision(self):
         collision_detected_new_tetromino = False

@@ -19,7 +19,10 @@ class TetrisGame:
         self.move_direction = False
         self.rotate = False
 
-        self.play_sound = False
+        self.game_is_end = True
+        self.tetris_is_end = False
+        self.play_sound = True
+
         self.song = game_song
 
     def play_audio(self):
@@ -29,72 +32,81 @@ class TetrisGame:
             time.sleep(0.04)
 
     def run_tetris(self):
-        game_is_end = False
-        self.play_sound = True
+
+
         _thread.start_new_thread(self.play_audio, ())
-        self.tetris.recreate_tetris()
 
         previous_time_game = time.ticks_ms()
         previous_time_key = time.ticks_ms()
         previous_time_move = time.ticks_ms()
 
-        while not game_is_end:
-            time_passed_game = time.ticks_diff(time.ticks_ms(), previous_time_game)
-            if time_passed_game >= 600:
-                self.lcd.fill(0)
-                self.tetris.tetromino.tetromino_fall()
-                self.draw_frame()
-                self.draw_tetris_board()
-                self.draw_tetromino()
+        while not self.tetris_is_end:
+            self.draw_menu()
+            while not self.game_is_end:
+                time_passed_game = time.ticks_diff(time.ticks_ms(), previous_time_game)
+                if time_passed_game >= 600:
+                    self.lcd.fill(0)
+                    self.tetris.tetromino.tetromino_fall()
+                    self.draw_frame()
+                    self.draw_tetris_board()
+                    self.draw_tetromino()
 
-                game_is_end, new_element = self.tetris.check_collision()
+                    self.game_is_end, new_element = self.tetris.check_collision()
 
-                if new_element:
-                    self.tetris.check_and_delete_filled_line()
-                    self.tetris.generate_new_element()
+                    if new_element:
+                        self.tetris.check_and_delete_filled_line()
+                        self.game_is_end = self.tetris.generate_new_element()
 
-                self.lcd.show()
-                previous_time_game = time.ticks_ms()
+                    self.lcd.show()
+                    previous_time_game = time.ticks_ms()
 
-            time_passed_move = time.ticks_diff(time.ticks_ms(), previous_time_move)
-            if time_passed_move >= 300:
-                self.lcd.fill(0)
+                time_passed_move = time.ticks_diff(time.ticks_ms(), previous_time_move)
+                if time_passed_move >= 300:
+                    self.lcd.fill(0)
 
-                if self.move_direction:
-                    self.move_direction = self.tetris.tetromino.tetromino_move(self.tetris.tetris_segments,
-                                                                               direction=self.move_direction)
+                    if self.move_direction:
+                        self.move_direction = self.tetris.tetromino.tetromino_move(self.tetris.tetris_segments,
+                                                                                   direction=self.move_direction)
 
-                if self.rotate:
-                    self.rotate = self.tetris.tetromino.rotate(self.rotate)
+                    if self.rotate:
+                        self.rotate = self.tetris.tetromino.rotate(self.rotate)
 
-                self.draw_frame()
-                self.draw_tetris_board()
-                self.draw_tetromino()
-                game_is_end, new_element = self.tetris.check_collision()
-                if new_element:
-                    self.tetris.check_and_delete_filled_line()
-                    self.tetris.generate_new_element()
-                self.lcd.show()
-                previous_time_move = time.ticks_ms()
+                    self.draw_frame()
+                    self.draw_tetris_board()
+                    self.draw_tetromino()
+                    self.game_is_end, new_element = self.tetris.check_collision()
+                    if new_element:
+                        self.tetris.check_and_delete_filled_line()
+                        self.game_is_end = self.tetris.generate_new_element()
+                    self.lcd.show()
+                    previous_time_move = time.ticks_ms()
 
-            time_passed_key = time.ticks_diff(time.ticks_ms(), previous_time_key)
-            if time_passed_key >= 50:
-                if not self.keyboard.button_left.value():
-                    self.move_direction = "left"
+                time_passed_key = time.ticks_diff(time.ticks_ms(), previous_time_key)
+                if time_passed_key >= 50:
+                    if not self.keyboard.button_left.value():
+                        self.move_direction = "left"
 
-                elif not self.keyboard.button_right.value():
-                    self.move_direction = "right"
+                    elif not self.keyboard.button_right.value():
+                        self.move_direction = "right"
 
-                elif not self.keyboard.button_up.value():
-                    self.rotate = "left"
+                    elif not self.keyboard.button_up.value():
+                        self.rotate = "left"
 
-                elif not self.keyboard.button_down.value():
-                    self.rotate = "right"
+                    elif not self.keyboard.button_down.value():
+                        self.rotate = "right"
 
-                elif not self.keyboard.button_back.value():
-                    game_is_end = True
-                    time.sleep_ms(200)
-                previous_time_key = time.ticks_ms()
+                    elif not self.keyboard.button_back.value():
+                        game_is_end = True
+                        time.sleep_ms(200)
+                    previous_time_key = time.ticks_ms()
+
+            if not self.keyboard.button_up.value():
+                self.game_is_end = False
+                self.tetris.recreate_tetris()
+
+            elif not self.keyboard.button_back.value():
+                self.tetris_is_end = True
+                time.sleep_ms(200)
 
         self.play_sound = False
         self.song.restart()
@@ -108,6 +120,13 @@ class TetrisGame:
         self.lcd.vline(1, 0, 48, 1)
         self.lcd.vline(83, 0, 48, 1)
         self.lcd.vline(82, 0, 48, 1)
+
+    def draw_menu(self):
+        self.lcd.fill(0)
+        self.draw_frame()
+        self.lcd.text("press UP", 4, 10)
+        self.lcd.text("to start", 4, 20)
+        self.lcd.show()
 
     def draw_tetris_board(self):
         for element in self.tetris.tetris_segments:
