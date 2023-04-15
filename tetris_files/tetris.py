@@ -181,14 +181,27 @@ class Tetromino:
         self.offset_y = self.offset_y + 4
 
     def tetromino_move(self, elements, direction):
+
+        # check if tetromino element collide with tetris segments on the board
         for tetris_board_element in elements:
             for element in self.tetromino_segments:
                 if direction == "left":
                     if (element.x - 4) == tetris_board_element.x and element.y == tetris_board_element.y:
                         return False
+
                 elif direction == "right":
                     if (element.x + 4) == tetris_board_element.x and element.y == tetris_board_element.y:
                         return False
+
+        # check if tetromino element collide with walls
+        for element in self.tetromino_segments:
+            if direction == "left":
+                if (element.x - 4) < 2:
+                    return False
+
+            elif direction == "right":
+                if (element.x + 4) >= 82:
+                    return False
 
         if direction == "left":
             for element in self.tetromino_segments:
