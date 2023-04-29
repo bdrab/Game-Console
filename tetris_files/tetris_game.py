@@ -4,6 +4,7 @@ from keyboard_files import keyboard
 from lib import buzzer_music
 import _thread
 import time
+from tetris_files.tetris_settings import *
 
 
 class TetrisGame:
@@ -110,20 +111,21 @@ class TetrisGame:
         self.song.restart()
 
     def draw_frame(self):
-        self.lcd.hline(0, 0, 84, 1)
-        self.lcd.hline(0, 1, 84, 1)
-        self.lcd.hline(0, 46, 84, 1)
-        self.lcd.hline(0, 47, 84, 1)
-        self.lcd.vline(0, 0, 48, 1)
-        self.lcd.vline(1, 0, 48, 1)
-        self.lcd.vline(83, 0, 48, 1)
-        self.lcd.vline(82, 0, 48, 1)
+        self.lcd.hline(2, 0, BOARD_X, 1)
+        self.lcd.hline(2, 1, BOARD_X, 1)
+        self.lcd.hline(2, SCREEN_RES_Y - 2, BOARD_X, 1)
+        self.lcd.hline(2, SCREEN_RES_Y - 1, BOARD_X, 1)
+
+        self.lcd.vline(0, 0, SCREEN_RES_Y, 1)
+        self.lcd.vline(1, 0, SCREEN_RES_Y, 1)
+        self.lcd.vline(BOARD_X + BORDERS, 0, SCREEN_RES_Y, 1)
+        self.lcd.vline(BOARD_X + BORDERS + 1, 0, SCREEN_RES_Y, 1)
 
     def draw_menu(self):
         self.lcd.fill(0)
         self.draw_frame()
-        self.lcd.text("press UP", 4, 10)
-        self.lcd.text("to start", 4, 20)
+        self.lcd.text("press UP", 45, 10)
+        self.lcd.text("to start", 45, 20)
         self.lcd.show()
 
     def draw_tetris_board(self):

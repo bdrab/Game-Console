@@ -1,5 +1,3 @@
-import time
-
 from machine import Pin, I2C
 from snake_files import snake_game
 from tetris_files import tetris_game
@@ -59,6 +57,3 @@ menu_items = [
 app = app.App(game_lcd=lcd, keyboard=keyboard, menu=menu_items)
 
 app.run()
-
-
-

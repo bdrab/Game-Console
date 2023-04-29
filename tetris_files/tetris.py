@@ -1,4 +1,5 @@
 import random
+from tetris_files.tetris_settings import *
 
 tetrominoes = [
     [
@@ -148,7 +149,7 @@ class Tetromino:
         self.rotation = random.choice(list(range(0, 4)))
         self.tetromino_type = None
         self.tetromino_segments = []
-        self.offset_x = 34
+        self.offset_x = 14
         self.offset_y = 2
         self.create_segments()
 
@@ -200,7 +201,7 @@ class Tetromino:
                     return False
 
             elif direction == "right":
-                if (element.x + 4) >= 82:
+                if (element.x + 4) > BOARD_X + BORDERS - 4:
                     return False
 
         if direction == "left":
@@ -241,7 +242,7 @@ class Tetris:
         collision_detected_end_game = False
 
         for element in self.tetromino.tetromino_segments:
-            if element.y >= 42:
+            if element.y >= BOARD_Y - BORDERS:
                 collision_detected_new_tetromino = True
                 for segment in self.tetromino.tetromino_segments:
                     self.tetris_segments.append(segment)
@@ -265,7 +266,7 @@ class Tetris:
         tetris_segments_coordinates = [(segment.x, segment.y) for segment in self.tetris_segments]
 
         for y in last_tetromino_ys.copy():
-            for x in range(2, 79, 4):
+            for x in range(2, BOARD_X + BORDERS - 4, 4):
                 if (x, y) not in tetris_segments_coordinates:
                     last_tetromino_ys.remove(y)
                     break
