@@ -1,14 +1,15 @@
 from snake_files import snake
-from lib import pcd8544_fb
+from lib import ssd1306
 from keyboard_files import keyboard
 from lib import buzzer_music
 import _thread
 import time
+from settings import SCREEN_RES_X, SCREEN_RES_Y
 
 
 class SnakeGame:
     def __init__(self,
-                 game_lcd: pcd8544_fb.PCD8544_FB,
+                 game_lcd: ssd1306.SSD1306_I2C,
                  game_keyboard: keyboard.Keyboard,
                  game_song: buzzer_music.music):
         self.lcd = game_lcd
@@ -32,7 +33,6 @@ class SnakeGame:
             time_passed_game = time.ticks_diff(time.ticks_ms(), previous_time_game)
             if time_passed_game >= 500:
                 self.lcd.fill(0)
-                self.lcd.show()
                 x, y = self.snake.move_snake()
                 if self.snake.food_has_been_eaten():
                     self.snake.add_segment(x, y)
@@ -57,14 +57,14 @@ class SnakeGame:
         self.song.restart()
 
     def draw_frame(self):
-        self.lcd.hline(0, 0, 84, 1)
-        self.lcd.hline(0, 1, 84, 1)
-        self.lcd.hline(0, 46, 84, 1)
-        self.lcd.hline(0, 47, 84, 1)
-        self.lcd.vline(0, 0, 48, 1)
-        self.lcd.vline(1, 0, 48, 1)
-        self.lcd.vline(83, 0, 48, 1)
-        self.lcd.vline(82, 0, 48, 1)
+        self.lcd.hline(0, 0, SCREEN_RES_X, 1)
+        self.lcd.hline(0, 1, SCREEN_RES_X, 1)
+        self.lcd.hline(0, SCREEN_RES_Y - 2, SCREEN_RES_X, 1)
+        self.lcd.hline(0, SCREEN_RES_Y-1, SCREEN_RES_X, 1)
+        self.lcd.vline(0, 0, SCREEN_RES_Y, 1)
+        self.lcd.vline(1, 0, SCREEN_RES_Y, 1)
+        self.lcd.vline(SCREEN_RES_X - 1, 0, SCREEN_RES_Y, 1)
+        self.lcd.vline(SCREEN_RES_X - 2, 0, SCREEN_RES_Y, 1)
 
     def draw_snake(self):
         for segment in self.snake.segments:

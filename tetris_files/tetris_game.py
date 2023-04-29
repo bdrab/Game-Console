@@ -1,5 +1,5 @@
 from tetris_files import tetris
-from lib import pcd8544_fb
+from lib import ssd1306
 from keyboard_files import keyboard
 from lib import buzzer_music
 import _thread
@@ -8,7 +8,7 @@ import time
 
 class TetrisGame:
     def __init__(self,
-                 game_lcd: pcd8544_fb.PCD8544_FB,
+                 game_lcd: ssd1306.SSD1306_I2C,
                  game_keyboard: keyboard.Keyboard,
                  game_song: buzzer_music.music):
 
@@ -32,8 +32,6 @@ class TetrisGame:
             time.sleep(0.04)
 
     def run_tetris(self):
-
-
         _thread.start_new_thread(self.play_audio, ())
 
         previous_time_game = time.ticks_ms()
@@ -95,8 +93,8 @@ class TetrisGame:
                     elif not self.keyboard.button_down.value():
                         self.rotate = "right"
 
-                    elif not self.keyboard.button_back.value():
-                        game_is_end = True
+                    elif not self.keyboard.button_arrow_left.value():
+                        self.game_is_end = True
                         time.sleep_ms(200)
                     previous_time_key = time.ticks_ms()
 
@@ -104,7 +102,7 @@ class TetrisGame:
                 self.game_is_end = False
                 self.tetris.recreate_tetris()
 
-            elif not self.keyboard.button_back.value():
+            elif not self.keyboard.button_arrow_left.value():
                 self.tetris_is_end = True
                 time.sleep_ms(200)
 

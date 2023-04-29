@@ -49,11 +49,11 @@ class App:
                     else:
                         self.display_menu(menu[selected_menu_items][1])
 
-                if not self.keyboard.button_left.value():
+                if not self.keyboard.button_arrow_left.value():
                     end_menu_level = True
                     time.sleep_ms(500)
 
-                if not self.keyboard.button_back.value():
+                if not self.keyboard.button_arrow_back.value():
                     end_menu_level = True
                     self.app_closed = True
 

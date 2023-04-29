@@ -1,5 +1,7 @@
 from snake_files import segment
 import random
+from settings import *
+
 START_POSITION = (30, 30)
 START_POSITION_2 = (26, 30)
 
@@ -63,7 +65,7 @@ class Snake:
     def check_win(self):
         end_game = False
 
-        if self.head.x < 2 or self.head.x > 78 or self.head.y < 2 or self.head.y > 42:
+        if self.head.x < 2 or self.head.x > SCREEN_RES_X - 6 or self.head.y < 2 or self.head.y > SCREEN_RES_Y - 6:
             end_game = True
 
         for snake_segment in self.segments[1:]:
@@ -78,8 +80,8 @@ class Snake:
             return True
 
     def generate_snake_food(self):
-        random_x = random.randrange(2, 82, 4)
-        random_y = random.randrange(2, 42, 4)
+        random_x = random.randrange(2, SCREEN_RES_X - 2, 4)
+        random_y = random.randrange(2, SCREEN_RES_Y - 2, 4)
 
         self.food.x = random_x
         self.food.y = random_y
